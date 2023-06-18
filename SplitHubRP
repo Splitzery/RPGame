@@ -1,0 +1,87 @@
+local library = loadstring(game:HttpGet('https://raw.githubusercontent.com/cypherdh/VanisUILIB/main/.gitignore'))()
+
+local Window = library:CreateWindow("SplitHub", "Westlake", 10044538000)
+
+local CriminalTab = Window:CreateTab("Criminal")
+
+local TransactionsPage = CriminalTab:CreateFrame("Transactions")
+local FishingPage = CriminalTab:CreateFrame("Fishing")
+
+local DealerPage = CriminalTab:CreateFrame("Dealer")
+
+WithdrawTextBox = TransactionsPage:CreateBox("Withdraw", 10044538000, function(arg)
+  local args = {
+    [1] = "Withdraw", -- "Deposit" "Withdraw"
+    [2] = tonumber(arg) -- Amount of money
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("MoneyEvents"):WaitForChild("ManageMoney"):FireServer(unpack(args))
+end)
+
+DepositTextBox = TransactionsPage:CreateBox("Deposit", 10044538000, function(arg)
+  local args = {
+    [1] = "Deposit", -- "Deposit" "Withdraw"
+    [2] = tonumber(arg) -- Amount of money
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("MoneyEvents"):WaitForChild("ManageMoney"):FireServer(unpack(args))
+end)
+
+AutoFarmToggle = FishingPage:CreateToggle("Start Auto-Farm", "Automatically fishes and uses bait in the 16th slot.", function(arg)
+  getgenv().Autofarm = arg
+        
+  if getgenv().Autofarm == true then
+  while wait(3.2) do
+    if getgenv().Autofarm == false then return end
+    local args = {
+      [1] = "White Shrimp",
+      [2] = "Slot16"
+  }
+  
+  game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("InventoryEvents"):WaitForChild("UseItem"):FireServer(unpack(args))
+  
+  game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("InventoryEvents"):WaitForChild("GetInventory"):InvokeServer()
+  
+  
+  local args = {
+      [1] = "CastHandler",
+      [2] = Vector3.new(-14.556161880493164, 4.2935471534729, -37.00923538208008),
+      [3] = Vector3.new(166.15687561035156, 6.364269733428955, 1849.7408447265625)
+  }
+  
+  game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("FishingEvent"):FireServer(unpack(args))
+  wait(4)
+  local args = {
+      [1] = "FishHandler",
+      [2] = "Fish"
+  }
+  
+  game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("FishingEvent"):FireServer(unpack(args))
+  wait(13)
+end
+end
+end)
+
+local loopclicked = false
+CatchFishButton = FishingPage:CreateButton("Instant Fish Catch", "Instantly catches fish when casted, use with auto-farm.", function()
+
+  if loopclicked == false then
+    loopclicked = true
+    while wait() do 
+    if game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("FishingUI") then
+    game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("FishingUI").MainFrame.FishFrame.Success.Position = game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("FishingUI").MainFrame.FishFrame.Fish.Position
+      
+  end
+  end
+  end
+  end)
+
+  ViewDealerButton = DealerPage:CreateButton("View Dealer", "Views the dealer for 5 seconds.", function()
+    workspace.CurrentCamera.CameraSubject = workspace.MiscItems.Gundealers["Deshawn Markus"].Head
+    wait(5)
+    workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character
+  end)
+
+  TeleportDealerButton = DealerPage:CreateButton("Teleport Dealer", "Teleports directly to the dealer.", function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.MiscItems.Gundealers["Deshawn Markus"]:GetModelCFrame()
+  end)
