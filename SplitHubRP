@@ -4,9 +4,9 @@ local Window = library:CreateWindow("SplitHub", "Westlake", 10044538000)
 
 local CriminalTab = Window:CreateTab("Criminal")
 
+local GamePage = CriminalTab:CreateFrame("Game")
 local TransactionsPage = CriminalTab:CreateFrame("Transactions")
 local FishingPage = CriminalTab:CreateFrame("Fishing")
-
 local DealerPage = CriminalTab:CreateFrame("Dealer")
 
 WithdrawTextBox = TransactionsPage:CreateBox("Withdraw", 10044538000, function(arg)
@@ -84,4 +84,90 @@ CatchFishButton = FishingPage:CreateButton("Instant Fish Catch", "Instantly catc
 
   TeleportDealerButton = DealerPage:CreateButton("Teleport Dealer", "Teleports directly to the dealer.", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.MiscItems.Gundealers["Deshawn Markus"]:GetModelCFrame()
+  end)
+
+
+
+  AutoFarmToggle = FishingPage:CreateToggle("Auto Sell", "Automatically sells every fish in your inventory every 5 seconds.", function(arg)
+    getgenv().AutoSell = arg
+        
+    if getgenv().AutoSell == true then
+    while wait() do
+      if getgenv().AutoSell == false then return end
+     while wait(5) do
+  workspace:WaitForChild("MiscItems"):WaitForChild("NPCs"):WaitForChild("Rishi"):WaitForChild("Dialogue"):WaitForChild("InitialPrompt"):WaitForChild("Response"):WaitForChild("Prompt"):WaitForChild("Response"):WaitForChild("Conditional"):WaitForChild("Module"):WaitForChild("RemoteFunction"):InvokeServer()
+  end
+  end
+  end
+  end)
+
+  LoadFishShopButton = FishingPage:CreateButton("Load Fish Shop", "Loads the shop so you can purchase items from it. (BREAKS INVENTORY)", function()
+    local args = {
+      [1] = workspace:WaitForChild("MiscItems"):WaitForChild("Bait Tackle"):WaitForChild("Interact"):WaitForChild("ShopInteraction"),
+      [2] = "Shop"
+  }
+  
+  game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Interact"):FireServer(unpack(args))
+  wait(.1)
+  if game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("ShopUI") then
+  if workspace.Camera:FindFirstChild("CamBlur") then
+  game:GetService("Players").LocalPlayer.PlayerGui.ShopUI.Enabled = false
+  workspace.Camera.CamBlur:remove()
+  game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+  game.Players.LocalPlayer.Character.Humanoid.JumpPower = 50
+  end
+  end
+  end)
+
+  UnLoadFishShopButton = FishingPage:CreateButton("Fix Inventory", "Fixes inventory if not showing", function()
+    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Ragdoll"):FireServer()
+    wait(1)
+    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Ragdoll"):FireServer()
+  end)
+
+
+  BuyShrimpButton = FishingPage:CreateButton("Purchase White Shrimp", "Purchases a white shrimp for $12.", function()
+    local args = {
+      [1] = "PurchaseItem",
+      [2] = "White Shrimp",
+      [3] = 1
+  }
+  
+  game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("MoneyEvents"):WaitForChild("Purchase"):FireServer(unpack(args))
+  
+  end)
+
+  BuyPoleButton = FishingPage:CreateButton("Purchase Fishing Pole", "Purchases a Fishing Pole for $50.", function()
+    local args = {
+      [1] = "PurchaseItem",
+      [2] = "Fishing Rod",
+      [3] = 1
+  }
+  
+  game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("MoneyEvents"):WaitForChild("Purchase"):FireServer(unpack(args))
+  
+  end)
+
+
+
+  AutoFarmToggle = GamePage:CreateToggle("No Pause", "Removes the overhead pause GUI so people don't know you're AFK.", function(arg)
+    getgenv().OverHeadUI = arg
+        
+    if getgenv().OverHeadUI == true then
+    while wait() do
+      if getgenv().OverHeadUI == false then return end
+      local args = {
+        [1] = "Focused",
+        [2] = false
+    }
+    
+    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("OverheadUIEvent"):FireServer(unpack(args))
+  end
+  end
+  end)
+
+  NoBlurButton = GamePage:CreateButton("No Hunger Blur", "Removes the blur effect caused by hunger.", function()
+    if workspace.Camera:FindFirstChild("HungerBlur") then
+    workspace.Camera.HungerBlur:remove()
+    end
   end)
